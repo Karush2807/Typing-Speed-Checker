@@ -1,6 +1,8 @@
 import curses #module for console input output, styling the terminal
 from curses import wrapper #initialize the curses application
 import time
+import random
+
 def start_screen(stdscr):
     stdscr.clear()
     stdscr.addstr("Welcome to the typing speed checker!")
@@ -23,17 +25,34 @@ def display_text(stdscr, target, current, wpm=0):
 
             stdscr.addstr(0, i, char, color)
 
-def test_typing(stdscr):
-    practice_text="The quick brown fox jumps over the lazy dog near the riverbank on a sunny day."
-    current_text=[] #jo user type krega
-    
-    while True:
-        stdscr.clear()
-        display_text(stdscr, practice_text, current_text)
-        stdscr.refresh()
-        
-        key=stdscr.getkey()
+def load_text():
+    with open("text.txt", 'r') as f:
+        lines=f.readlines()
+        return random.choice(lines).strip()
 
+def test_typing(stdscr):
+    practice_text=load_text()
+    current_text=[] #jo user type krega
+    wpm=0
+    time_start= time.time()
+    stdscr.nodelay(True)
+
+    while True:
+        time_taken= max(time.time()-time_start, 1)
+        wpm=round((len(current_text)/(time_taken/60))/5)
+        stdscr.clear()
+        display_text(stdscr, practice_text, current_text, wpm)
+        stdscr.refresh()
+
+        if "".join(current_text)==practice_text:
+            stdscr.nodelay(False)
+            break
+        
+        try:
+            key=stdscr.getkey()
+        except curses.error:
+            continue
+        
         if ord(key)==27: #if escape key is pressed
             break
 
@@ -46,13 +65,12 @@ def test_typing(stdscr):
 
         
 
-        stdscr.clear()
-        stdscr.addstr(practice_text)
+        
 
-        for char in current_text:
-            stdscr.addstr(char, curses.color_pair(1))
+        
         
         stdscr.refresh()
+        stdscr.getkey()
 
 def main(stdscr):
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) #initialize color pair for text background and foreground [if typed correctly]
@@ -61,6 +79,9 @@ def main(stdscr):
     
     start_screen(stdscr)
     test_typing(stdscr)
+
+    stdscr.addstr(2, 0, "text Completed:)")
+    stdscr.getkey()
 
 
 wrapper(main) #initialize the curses application

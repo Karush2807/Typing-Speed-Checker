@@ -8,27 +8,51 @@ def start_screen(stdscr):
     stdscr.refresh()
     stdscr.getkey()
 
+
+def display_text(stdscr, target, current, wpm=0):
+        stdscr.addstr(target)
+        
+        
+        for i, char in enumerate(current):
+            correct_text= target[i]
+            color= curses.color_pair(1)
+
+            if char!=correct_text:
+                color=curses.color_pair(2)
+
+            stdscr.addstr(0, i, char,   curses.color_pair(1))
+
+
+
+
 def test_typing(stdscr):
     practice_text="The quick brown fox jumps over the lazy dog near the riverbank on a sunny day."
     current_text=[] #jo user type krega
     
-    stdscr.clear()
-    stdscr.addstr(practice_text)
-    stdscr.refresh()
-    stdscr.getkey()
+    # stdscr.clear()
+    # stdscr.addstr(practice_text)
+    # stdscr.refresh()
+    # stdscr.getkey()
 
     while True:
+        stdscr.clear()
+        display_text(stdscr, practice_text, current_text)
+        stdscr.refresh()
+        
         key=stdscr.getkey()
 
         if ord(key)==27: #if escape key is pressed
             break
 
         if key in("KEY_BACKSPACE", "\b", "\x7f"):
-            current_text.pop()
+            if len(current_text)>0:
+                current_text.pop()
+        else:
+            current_text.append(key)
 
-        current_text.append(key)
+        
 
-        #stdscr.clear()
+        stdscr.clear()
         stdscr.addstr(practice_text)
 
         for char in current_text:

@@ -50,7 +50,7 @@ def load_text():
 
 def test_typing(stdscr):
     # Main function to handle the typing test logic
-    practice_text = load_text()  # load the practice text
+    practice_text = "hello how u doin, bruhh"  # load the practice text
     current_text = []  # list to store the characters typed by the user
     wpm = 0  # initialize WPM (Words Per Minute) to 0
     time_start = time.time()  # get the current time
